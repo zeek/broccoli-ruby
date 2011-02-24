@@ -1,0 +1,44 @@
+rBroccoli is an interface for the Bro-IDS Broccoli library.
+
+URL: http://rbroccoli.rubyforge.org 
+
+Author: Seth Hall <hall.692@osu.edu> 
+
+Version: 1.4.0 
+
+Date: 2008-08-30
+
+=About
+This is the rBroccoli extension for ruby which provides access to the 
+Broccoli API.  Broccoli is a library for communicating with the Bro Intrusion
+Detection System.  Broccoli is distributed with Bro now, so I'm going to be
+releasing versions of rBroccoli that target Bro versions.
+
+Bro IDS:: http://www.bro-ids.org
+
+=Install
+To install the extension
+1. Make sure that the broccoli-config binary is in your path.
+     (export PATH=/usr/local/bro/bin:$PATH)
+2. Run, "sudo ruby setup.rb"
+
+To install the extension as a gem (<b>suggested</b>)
+1. Install rubygems... http://rubygems.org/
+2. Make sure that the broccoli-config binary is in your path. 
+     (export PATH=/usr/local/bro/bin:$PATH)
+3. Run, "sudo gem install rbroccoli" 
+
+=Usage
+There aren't really any useful docs yet.  Your best bet currently is
+to to read through the examples.
+
+One thing I should mention however is that I haven't done any optimization
+yet.  You may find that if you write code that is going to be sending or
+receiving extremely large numbers of events, that it won't run fast enough and 
+will begin to fall behind the Bro server.  The dns_requests.rb example is
+a good performance test if your Bro server is sitting on a network with many
+dns lookups.
+
+=Contact
+If you have a question/comment/patch, email me at:
+  seth@icir.org
