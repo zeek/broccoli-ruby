@@ -66,10 +66,10 @@ if (MISSING_PREREQS)
 endif ()
 
 if (RUBY_INCLUDE_PATH)
-    # CMake 2.6 compatibility -- FindRubyLibs used to set RUBY_INCLUDE_PATH
+    # CMake 2.6 compatibility -- FindRuby used to set RUBY_INCLUDE_PATH
     include_directories(BEFORE ${RUBY_INCLUDE_PATH})
 else ()
-    include_directories(BEFORE ${RUBY_INCLUDE_DIR})
+    include_directories(BEFORE ${RUBY_INCLUDE_DIRS})
 endif ()
 
 include_directories(BEFORE ${Broccoli_INCLUDE_DIR})
@@ -79,8 +79,9 @@ include_directories(BEFORE ${Broccoli_INCLUDE_DIR})
 
 include(UseSWIG)
 
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/ext/broccoli)
 swig_add_module(broccoli_intern RUBY ext/broccoli/broccoli_intern.i)
-swig_link_libraries(broccoli_intern ${Broccoli_LIBRARY} ${RUBY_LIBRARIES})
+swig_link_libraries(broccoli_intern ${Broccoli_LIBRARY} ${RUBY_LIBRARY})
 
 ########################################################################
 ## Install Files
