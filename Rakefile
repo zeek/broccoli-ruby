@@ -4,7 +4,7 @@ require 'rake/gempackagetask'
 require 'rake/testtask'
 require 'rake/contrib/rubyforgepublisher'
 
-PKG_VERSION = "1.4.2"
+PKG_VERSION = "1.5.2"
 PKG_NAME = "broccoli"
 PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
 RUBY_FORGE_PROJECT = 'rbroccoli'
@@ -22,7 +22,7 @@ spec = Gem::Specification.new do |s|
   #s.require_path = '.'
   #s.require_paths << 'lib'
   s.author = "Seth Hall"
-  s.email = "hall.692@osu.edu"
+  s.email = "seth@icir.org"
   s.homepage = "http://rbroccoli.rubyforge.org"  
   s.rubyforge_project = RUBY_FORGE_PROJECT
 end
@@ -42,11 +42,10 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-
-desc "Publish the release files to RubyForge."
-task :tag_svn do
-  system("svn cp svn+ssh://rubyforge.org/var/svn/rbroccoli/trunk svn+ssh://rubyforge.org/var/svn/rbroccoli/tags/release_#{PKG_VERSION.gsub(/\./,'_')} -m 'tag release #{PKG_VERSION}'")
-end
+#desc "Publish the release files to RubyForge."
+#task :tag_svn do
+#  system("svn cp svn+ssh://rubyforge.org/var/svn/rbroccoli/trunk svn+ssh://rubyforge.org/var/svn/rbroccoli/tags/release_#{PKG_VERSION.gsub(/\./,'_')} -m 'tag release #{PKG_VERSION}'")
+#end
 
 desc "Publish the API documentation"
 task :pdoc => [:rdoc] do
