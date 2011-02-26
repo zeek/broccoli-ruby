@@ -6,11 +6,11 @@ project(RbBroccoli)
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 # Prohibit in-source builds.
-#if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-#    message(FATAL_ERROR "In-source builds are not allowed. Please use "
-#                        "./configure to choose a build directory and "
-#                        "initialize the build configuration.")
-#endif ()
+if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "In-source builds are not allowed. Please use "
+                        "./configure to choose a build directory and "
+                        "initialize the build configuration.")
+endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -56,6 +56,9 @@ include(FindRequiredPackage)
 
 FindRequiredPackage(Broccoli)
 FindRequiredPackage(SWIG)
+
+set(Ruby_FIND_VERSION_MAJOR 1)
+set(Ruby_FIND_VERSION_MINOR 8)
 FindRequiredPackage(Ruby)
 
 if (MISSING_PREREQS)
