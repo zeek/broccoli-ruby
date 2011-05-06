@@ -1,0 +1,11 @@
+1.4.0 | 2011-02-25 21:26:49 -0500
+
+  * Cleaning up and adding a configure script. (Seth Hall)
+
+  * Ruby 1.8 is now required. (Seth Hall)
+
+  * CMake fixes. (Seth Hall and Jon Siwek)
+
+  * Initial import. (Seth Hall)
+
+
