@@ -21,7 +21,6 @@ module Bro
            :timer => BRO_TYPE_TIMER,
            :port => BRO_TYPE_PORT,
            :addr => BRO_TYPE_IPADDR,
-           :net => BRO_TYPE_NET,
            :subnet => BRO_TYPE_SUBNET,
            :record => BRO_TYPE_RECORD,
            # These are not handled by the ruby binding.
