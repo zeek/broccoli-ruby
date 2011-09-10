@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 
-begin
-  require 'bro' # If installed as a native extension
-rescue LoadError
-  require 'rubygems' # If install as a gem
-  gem 'broccoli'
-  require 'bro'
-end
+require 'broccoli'
 
 require 'logger'
 require 'optparse'
@@ -14,14 +8,14 @@ require 'ostruct'
 require 'ipaddr'
 
 class BrohoseApp < Logger::Application
-  include Bro
+  include Broccoli
   
   def run
     opt = parse_opts()
       
     # Set debugging vars
-    Bro.debug_messages=true if opt.debug > 0  
-    Bro.debug_calltrace=true if opt.debug > 1
+    Broccoli.debug_messages=true if opt.debug > 0  
+    Broccoli.debug_calltrace=true if opt.debug > 1
       
     printf("Will attempt to send %i events from %i processes, to %s\n",
            opt.events, opt.processes, opt.host)
@@ -29,7 +23,7 @@ class BrohoseApp < Logger::Application
     STDIN.gets
     
     # Create the connection object
-    bc = Bro::Connection.new("#{opt.host}:#{opt.port}", BRO_CFLAG_SHAREABLE)
+    bc = Broccoli::Connection.new("#{opt.host}:#{opt.port}")
         
     if bc.connect
       #puts "connected"
@@ -72,7 +66,7 @@ class BrohoseApp < Logger::Application
   
   def hose_away(bc, events)
     (1..events).each do |i|
-      ev = Bro::Event.new("brohose")  
+      ev = Broccoli::Event.new("brohose")  
       msg = sprintf("%u-%i-%i", @pid, i, bc.queue_length) 
       ev.insert(msg, :string)
       bc.send(ev) 

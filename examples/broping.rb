@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 
-begin
-  require 'bro' # If installed as a native extension
-rescue LoadError
-  require 'rubygems' # If install as a gem
-  gem 'broccoli'
-  require 'bro'
-end
+require 'broccoli'
 
 require 'logger'
 require 'optparse'
@@ -14,22 +8,20 @@ require 'ostruct'
 require 'ipaddr'
 
 class BropingApp < Logger::Application
-  include Bro
-  
   def run
     opt = parse_opts()
       
     # Set debugging vars
-    Bro.debug_messages=true if opt.debug > 0  
-    Bro.debug_calltrace=true if opt.debug > 1
+    Broccoli.debug_messages=true if opt.debug > 0  
+    Broccoli.debug_calltrace=true if opt.debug > 1
       
     # Create the connection object
-    bc = Bro::Connection.new("#{opt.host}:#{opt.port}", BRO_CFLAG_RECONNECT | BRO_CFLAG_ALWAYS_QUEUE)
+    bc = Broccoli::Connection.new("#{opt.host}:#{opt.port}")
     
     if opt.record
       # Register the pong event handler
       bc.event_handler_for "pong" do |p|
-        now = Bro::current_time_f  
+        now = Broccoli::current_time_f  
         printf "pong event from %s: seq=%i, time=%6f/%6f s\n", opt.host,
                                                                p.seq,
                                                                p.dst_time-p.src_time,
@@ -38,7 +30,7 @@ class BropingApp < Logger::Application
     else
       # Register the pong event handler
       bc.event_handler_for "pong" do |src_time, dst_time, seq|
-        now = Bro::current_time_f
+        now = Broccoli::current_time_f
         printf "pong event from %s: seq=%i, time=%6f/%6f s\n", opt.host,
                                                                seq,
                                                                dst_time.to_f-src_time.to_f,
@@ -53,14 +45,14 @@ class BropingApp < Logger::Application
       while true
         break if opt.count > 0 && seq == opt.count
 
-        ev = Bro::Event.new("ping")        
+        ev = Broccoli::Event.new("ping")        
         if opt.record
-          rec = Bro::Record.new
+          rec = Broccoli::Record.new
           rec.insert("seq", seq, :count)
-          rec.insert("src_time", Bro::current_time_f, :time)
+          rec.insert("src_time", Broccoli::current_time_f, :time)
           ev.insert(rec, :record)
         else
-          ev.insert(Bro.current_time_f, :time)
+          ev.insert(Broccoli.current_time_f, :time)
           ev.insert(seq, :count)
         end
         bc.send(ev)
@@ -90,7 +82,7 @@ class BropingApp < Logger::Application
     options.record = false
     
     opts = OptionParser.new do |opts|
-      opts.banner = "rbroping - sends ping events to a Bro agent, expecting pong events (written in ruby).\nUsage: #{$0} [options] host"
+      opts.banner = "broping - sends ping events to a Bro agent, expecting pong events (written in ruby).\nUsage: #{$0} [options] host"
 
       opts.separator ""
       opts.separator "Specific options:"

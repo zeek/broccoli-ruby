@@ -1,7 +1,7 @@
 # This gives a nice interface for retrieving fields from records
 module SWIG
   class TYPE_p_bro_record   
-    include Broccoli
+    include Broccoli_ext
     
     # .id is a method for all ruby objects.  Move it out of the way for records.
     alias :orig_id :id
@@ -22,9 +22,9 @@ module SWIG
 end
 
 
-module Bro
+module Broccoli
   class Record
-    include Broccoli
+    include Broccoli_ext
     attr_accessor :rec
     
     def initialize
@@ -46,12 +46,12 @@ module Bro
     
     def insert(name, value, type, type_name=nil)
       value = value.rec if type == :record
-      bro_record_add_val(@rec, name.to_s, [Bro::TYPES[type], type_name, value])
+      bro_record_add_val(@rec, name.to_s, [Broccoli::TYPES[type], type_name, value])
     end
     
     def insert_at(pos, value, type, type_name=nil)
       value = value.rec if type == :record
-      bro_record_set_nth_val(@rec, pos, [Bro::TYPES[type], type_name, value])
+      bro_record_set_nth_val(@rec, pos, [Broccoli::TYPES[type], type_name, value])
     end
     alias :insert_at_position :insert_at
     

@@ -1,12 +1,12 @@
-require 'broccoli'
+require 'broccoli_ext'
 require 'time'
 
-require 'Bro/connection'
-require 'Bro/event'
-require 'Bro/record'
+require 'Broccoli/connection'
+require 'Broccoli/event'
+require 'Broccoli/record'
 
-module Bro
-  include Broccoli
+module Broccoli
+  include Broccoli_ext
   
   TYPES = {:unknown => BRO_TYPE_UNKNOWN, # not really sure how this should be handled.
            :bool => BRO_TYPE_BOOL,
@@ -35,24 +35,25 @@ module Bro
            :func => BRO_TYPE_FUNC,
            :file => BRO_TYPE_FILE,
            :vector => BRO_TYPE_VECTOR,
-           :type => BRO_TYPE_TYPE,
+           # TYPE_TYPE is not in broccoli.h yet.
+           #:type => BRO_TYPE_TYPE,
            :error => BRO_TYPE_ERROR
           }
   
-  def Bro.current_time_f
-    Broccoli::bro_util_current_time
+  def Broccoli.current_time_f
+    Broccoli_ext::bro_util_current_time
   end
 
-  def Bro.current_time
+  def Broccoli.current_time
     Time.at( current_time_f() )
   end
 
-  def Bro.debug_calltrace=(v)
-    Broccoli::bro_debug_calltrace=v
+  def Broccoli.debug_calltrace=(v)
+    Broccoli_ext::bro_debug_calltrace=v
   end
 
-  def Bro.debug_messages=(v)
-    Broccoli::bro_debug_messages=v
+  def Broccoli.debug_messages=(v)
+    Broccoli_ext::bro_debug_messages=v
   end
 end
 

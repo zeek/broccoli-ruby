@@ -19,7 +19,8 @@ type ruby > /dev/null 2>&1 || {
     echo "This package requires Ruby 1.8, please install it first." >&2;
 }
 
-site_packages=`ruby -r rbconfig -e 'print $:[0] + "/" + Config::CONFIG["host"]'`
+site_packages=`ruby -e 'print $:[0]'`
+site_arch_packages=`ruby -r rbconfig -e 'print $:[0] + "/" + Config::CONFIG["arch"]'`
 rbver=`ruby -e 'printf("%s.%s", *RUBY_VERSION.split("."))'`
 
 usage="\
@@ -64,9 +65,10 @@ append_cache_entry () {
 # set defaults
 builddir=build
 CMakeCacheEntries=""
-append_cache_entry RB_MOD_INSTALL_DIR   PATH     $site_packages
-append_cache_entry ENABLE_DEBUG         BOOL     false
-append_cache_entry RUBY_EXECUTABLE      PATH     `which ruby`
+append_cache_entry RB_SITE_INSTALL_DIR      PATH     $site_packages
+append_cache_entry RB_SITE_ARCH_INSTALL_DIR PATH     $site_arch_packages
+append_cache_entry ENABLE_DEBUG             BOOL     false
+append_cache_entry RUBY_EXECUTABLE          PATH     `which ruby`
 
 # parse arguments
 while [ $# -ne 0 ]; do

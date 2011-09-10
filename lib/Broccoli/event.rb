@@ -1,7 +1,7 @@
-module Bro
+module Broccoli
   
   class Event
-    include Broccoli
+    include Broccoli_ext
     attr_reader :ev
     
     def initialize(name)
@@ -13,7 +13,7 @@ module Bro
     # Insert a value into an event.
     def insert(value, type, type_name=nil)
       value = value.rec if type == :record
-      bro_event_add_val(@ev, [Bro::TYPES[type], type_name, value])
+      bro_event_add_val(@ev, [Broccoli::TYPES[type], type_name, value])
     end
     
     private

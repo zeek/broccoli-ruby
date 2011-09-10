@@ -12,5 +12,5 @@ if have_header("broccoli.h") and
    # of the new event registration function
    have_library("broccoli", "bro_event_registry_add_compact") and
    have_library("ssl")
-  create_makefile("broccoli")
+  create_makefile("broccoli_ext")
 end

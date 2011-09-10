@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 
-begin
-  require 'bro' # If installed as a native extension
-rescue LoadError
-  require 'rubygems' # If install as a gem
-  gem 'broccoli'
-  require 'bro'
-end
+require 'broccoli'
 
 require 'logger'
 require 'optparse'
@@ -14,21 +8,21 @@ require 'ostruct'
 require 'ipaddr'
 
 class BroenumApp < Logger::Application
-  include Bro
+  include Broccoli
   
   def run
     opt = parse_opts()
       
     # Set debugging vars
-    Bro.debug_messages=true if opt.debug > 0  
-    Bro.debug_calltrace=true if opt.debug > 1
+    Broccoli.debug_messages=true if opt.debug > 0  
+    Broccoli.debug_calltrace=true if opt.debug > 1
     
     # Create the connection object
-    bc = Bro::Connection.new("#{opt.host}:#{opt.port}", BRO_CFLAG_NONE)
+    bc = Broccoli::Connection.new("#{opt.host}:#{opt.port}")
         
     if bc.connect
-      #puts "connected"
-      ev = Bro::Event.new("enumtest")
+      puts "connected"
+      ev = Broccoli::Event.new("enumtest")
       ev.insert(opt.num, :enum, opt.type_name)
       puts "Sending enum val #{opt.num} to remote peer."
       bc.send(ev)

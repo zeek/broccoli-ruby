@@ -7,11 +7,14 @@ module SWIG
   end
 end
 
-module Bro
+module Broccoli
   class Connection
-    include Broccoli
+    include Broccoli_ext
     
     def initialize(hp, flags=nil)
+      # Initialize the library first.
+      bro_init(nil);
+      
       flags ||= (BRO_CFLAG_RECONNECT | BRO_CFLAG_ALWAYS_QUEUE)
       @bc = bro_conn_new_str(hp, flags)
       @io_object = nil

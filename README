@@ -2,17 +2,16 @@ rBroccoli is an interface for the Bro-IDS Broccoli library.
 
 URL: http://rbroccoli.rubyforge.org 
 
-Author: Seth Hall <hall.692@osu.edu> 
+Author: Seth Hall <seth@icir.org> 
 
 Version: 1.4.0 
 
 Date: 2008-08-30
 
 =About
-This is the rBroccoli extension for ruby which provides access to the 
+This is the broccoli-ruby extension for ruby which provides access to the 
 Broccoli API.  Broccoli is a library for communicating with the Bro Intrusion
-Detection System.  Broccoli is distributed with Bro now, so I'm going to be
-releasing versions of rBroccoli that target Bro versions.
+Detection System.
 
 Bro IDS:: http://www.bro-ids.org
 

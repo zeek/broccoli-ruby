@@ -1,18 +1,12 @@
 #!/usr/bin/env ruby
 
-begin
-  require 'bro' # If installed as a native extension
-rescue LoadError
-  require 'rubygems' # If install as a gem
-  gem 'broccoli'
-  require 'bro'
-end
+require 'broccoli'
 
 require 'ipaddr'
-include Bro
+include Broccoli
 
-Bro.debug_calltrace=false
-Bro.debug_messages=false
+Broccoli.debug_messages=false
+Broccoli.debug_calltrace=false
 
 SRC_STR  = "%s/%s [%u/%u] -> "
 DST_STR  = "%s/%s [%u/%u], "
@@ -32,7 +26,7 @@ def generic_conn(conn)
   end
 end
 
-bc = Bro::Connection.new("127.0.0.1:47758", BRO_CFLAG_RECONNECT)
+bc = Broccoli::Connection.new("127.0.0.1:47758", BRO_CFLAG_CACHE)
 
 bc.event_handler_for("connection_attempt")     { |conn| print "connection_attempt: "; generic_conn(conn) }
 bc.event_handler_for("connection_established") { |conn| print "connection_established: "; generic_conn(conn) }

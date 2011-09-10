@@ -1,18 +1,15 @@
 #!/usr/bin/env ruby
 
-begin
-  require 'bro' # If installed as a native extension
-rescue LoadError
-  require 'rubygems' # If install as a gem
-  gem 'broccoli'
-  require 'bro'
-end
+require 'broccoli'
 
 require 'ipaddr'
 require 'time'
-include Bro
 
-bc = Bro::Connection.new("localhost:47758")
+# Set debugging vars
+#Broccoli_ext::bro_debug_messages=true
+#Broccoli_ext::bro_debug_calltrace=true
+
+bc = Broccoli::Connection.new("localhost:47758")
 
 bc.event_handler_for "dns_request" do |c, msg, query, qtype, qclass|
   begin

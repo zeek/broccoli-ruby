@@ -1,4 +1,4 @@
-project(RbBroccoli)
+project(broccoli-ruby)
 
 ########################################################################
 ## CMake Configuration
@@ -90,22 +90,35 @@ include_directories(BEFORE ${Broccoli_INCLUDE_DIR})
 
 include(UseSWIG)
 
-set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/ext/broccoli)
-swig_add_module(broccoli_intern RUBY ext/broccoli/broccoli_intern.i)
-swig_link_libraries(broccoli_intern ${Broccoli_LIBRARY} ${RUBY_LIBRARY})
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/ext/broccoli_ext)
+swig_add_module(broccoli_ext ruby ext/broccoli_ext/broccoli_intern.i)
+if (APPLE)
+    # Mac OS X needs ruby extensions to end with ".bundle"
+    # and it needs the -flat_namespace argument for SWIG.
+    set_target_properties(broccoli_ext 
+        PROPERTIES SUFFIX ".bundle"
+        LINK_FLAGS "-flat_namespace" )
+endif ()
+set_target_properties(broccoli_ext PROPERTIES 
+    OUTPUT_NAME "broccoli_ext" 
+    PREFIX "")
+swig_link_libraries(broccoli_ext ${Broccoli_LIBRARY} ${RUBY_LIBRARY})
 
 ########################################################################
 ## Install Files
 
-if (NOT RB_MOD_INSTALL_DIR)
+if (NOT RB_SITE_INSTALL_DIR)
     # the configure wrapper was not used, default to "home" style installation
-    set(RB_MOD_INSTALL_DIR lib/ruby)
+    set(RB_SITE_INSTALL_DIR lib/ruby)
 endif ()
 
-install(FILES broccoli.rb
-        DESTINATION ${RB_MOD_INSTALL_DIR})
-install(TARGETS ${SWIG_MODULE_broccoli_intern_REAL_NAME}
-        DESTINATION ${RB_MOD_INSTALL_DIR})
+install(FILES lib/broccoli.rb DESTINATION ${RB_SITE_INSTALL_DIR})
+install(FILES lib/Broccoli/connection.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
+install(FILES lib/Broccoli/event.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
+install(FILES lib/Broccoli/record.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
+
+install(TARGETS ${SWIG_MODULE_broccoli_ext_REAL_NAME}
+        DESTINATION ${RB_SITE_ARCH_INSTALL_DIR})
 
 ########################################################################
 ## Build Summary
@@ -115,9 +128,9 @@ if (CMAKE_BUILD_TYPE)
 endif ()
 
 message(
-    "\n================|  RbBroccoli Build Summary  |=================="
+    "\n==============|  Broccoli-Ruby Build Summary  |================="
     "\n"
-    "\nInstall dir:       ${RB_MOD_INSTALL_DIR}"
+    "\nInstall dir:       ${RB_SITE_INSTALL_DIR}"
     "\nDebug mode:        ${ENABLE_DEBUG}"
     "\n"
     "\nCC:                ${CMAKE_C_COMPILER}"

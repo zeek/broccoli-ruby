@@ -1,4 +1,4 @@
-%module "broccoli"
+%module "broccoli_ext"
 
 %include cpointer.i
 %include typemaps.i
@@ -6,18 +6,19 @@
 %{
 /* Includes the header in the wrapper code */
 #include "broccoli.h"
+
+#include <inttypes.h>
+typedef int64_t int64;
 %}
 
 %{
   
 /* Convert Ruby String to BroString */
 BroString to_brostring(VALUE obj){
-  if(!NIL_P(obj)){
-    Check_Type(obj, T_STRING);
-    BroString bs;
-    bro_string_set(&bs, STR2CSTR(obj));
-    return bs;
-  }
+  Check_Type(obj, T_STRING);
+  BroString bs;
+  bro_string_set(&bs, STR2CSTR(obj));
+  return bs;
 }
 
 static void
@@ -28,15 +29,17 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
   VALUE proc = (VALUE)user_data;
   VALUE out[15] = {Qnil,Qnil,Qnil,Qnil,Qnil,Qnil,Qnil,Qnil,
                    Qnil,Qnil,Qnil,Qnil,Qnil,Qnil,Qnil};
-    
   callback_arity = NUM2INT(rb_funcall(proc, rb_intern("arity"), 0));
+  // The absence of any arguments is the same as 0 arguments
+  if ( callback_arity == -1 ) 
+    ++callback_arity;
   if ( callback_arity != meta->ev_numargs ) 
   {
     printf("ERROR: callback has %d arguments when it should have %d arguments.\n", 
            callback_arity,
            meta->ev_numargs);
   }
-  for(i=0 ; i < meta->ev_numargs ; i++) 
+  for (i=0 ; i < meta->ev_numargs ; i++) 
   {
     //printf("Loop #%i\n", i);
     switch (meta->ev_args[i].arg_type)
@@ -50,7 +53,7 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
         break;
       case BRO_TYPE_INT:
       case BRO_TYPE_ENUM:
-        //printf("Found an integer in the callback wrapper\n");
+        //printf("Found an enum/integer in the callback wrapper\n");
         out[i] = INT2NUM( *((int *) meta->ev_args[i].arg_data) );
         break;
       case BRO_TYPE_BOOL:
@@ -58,6 +61,7 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
         out[i] = *((int *) meta->ev_args[i].arg_data) ? Qtrue : Qfalse;
         break;
       case BRO_TYPE_STRING:
+      case BRO_TYPE_FILE:
         //printf("Found a BroString in the callback wrapper\n");
         out[i] = rb_str_new( (char*) bro_string_get_data( (BroString*) meta->ev_args[i].arg_data ), 
                                      bro_string_get_length( (BroString*) meta->ev_args[i].arg_data ) );    
@@ -77,21 +81,20 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
         //output ip addresses as strings that can be unpacked from ruby.
         out[i] = rb_str_new2((char *) meta->ev_args[i].arg_data);
         break;
-	  case BRO_TYPE_COUNTER:
-	  case BRO_TYPE_TIMER:
-	  case BRO_TYPE_PATTERN:
-	  case BRO_TYPE_SUBNET:
-	  case BRO_TYPE_ANY:
-	  case BRO_TYPE_TABLE:
-	  case BRO_TYPE_UNION:
-	  case BRO_TYPE_LIST:
-	  case BRO_TYPE_FUNC:
-	  case BRO_TYPE_FILE:
-	  case BRO_TYPE_VECTOR:
-	  case BRO_TYPE_ERROR:
-	  case BRO_TYPE_MAX:
-		printf("Type not yet handled.\n");
-		break;
+      case BRO_TYPE_COUNTER:
+      case BRO_TYPE_TIMER:
+      case BRO_TYPE_PATTERN:
+      case BRO_TYPE_SUBNET:
+      case BRO_TYPE_ANY:
+      case BRO_TYPE_TABLE:
+      case BRO_TYPE_UNION:
+      case BRO_TYPE_LIST:
+      case BRO_TYPE_FUNC:
+      case BRO_TYPE_VECTOR:
+      case BRO_TYPE_ERROR:
+      case BRO_TYPE_MAX:
+        printf("Type not yet handled.\n");
+        break;
       default:
         printf("Invalid type was registered for callback!\n");
         break;
@@ -132,9 +135,10 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
 //bro_event_set_val
 %typemap(in) (int type, const char *type_name, const void *val)
 {
+  int64 tmp_int64;
+  uint64 tmp_uint64;
   int tmp_int;
   double tmp_double;
-  uint32 tmp_uint32;
   BroString tmp_brostring;
   void *tmp_swigpointer;
   int res;
@@ -145,7 +149,7 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
   // Use ruby's array accessor method to get the type, type_name and value
   type = NUM2INT(rb_funcall($input, rb_intern("at"), 1, INT2NUM(0)));
   $1 = type;
-  type_name = rb_funcall($input, rb_intern("at"), 1, INT2NUM(1));  
+  type_name = rb_funcall($input, rb_intern("at"), 1, INT2NUM(1));
   if ( rb_funcall(type_name, rb_intern("=="), 1, Qnil) == Qtrue )
   {
     $2 = NULL;
@@ -158,10 +162,9 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
   switch(type)
   {
     case BRO_TYPE_INT:
-    case BRO_TYPE_ENUM:
-      //printf("Matched on Fixnum!  Storing value as an int (%i)\n", NUM2INT($input));
-      tmp_int = NUM2INT(value);
-      $3 = &tmp_int;
+      //printf("Matched on Fixnum!  Storing value as an int (%i)\n", NUM2LL(value));
+      tmp_int64 = NUM2LL(value);
+      $3 = &tmp_int64;
       break;
       
     case BRO_TYPE_BOOL:
@@ -179,10 +182,11 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
       break;
       
     case BRO_TYPE_COUNT:
+    case BRO_TYPE_ENUM:
     case BRO_TYPE_IPADDR:
-      //printf("Storing value as a uint32\n");
-      tmp_uint32 = rb_num2ulong(value);
-      $3 = &tmp_uint32;
+      //printf("Storing value as a uint64\n");
+      tmp_uint64 = NUM2ULL(value);
+      $3 = &tmp_uint64;
       break;
       
     case BRO_TYPE_STRING:
@@ -268,7 +272,7 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
     case BRO_TYPE_INT:
     case BRO_TYPE_ENUM:
       //printf("Ruby: Getting data matched on int\n");
-      $result = INT2NUM( *((int *) $1) );    
+      $result = ULL2NUM( *((uint64 *) $1) );    
       break;
     
     case BRO_TYPE_TIME:
@@ -284,13 +288,13 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
       break;
       
     case BRO_TYPE_COUNT:
-      //printf("Ruby: Getting data matched on uint32\n");   
-      $result = ULONG2NUM( *((uint32 *) $1) );
+      //printf("Ruby: Getting data matched on uint64\n");   
+      $result = ULL2NUM( *((uint64 *) $1) );
       break;
       
     case BRO_TYPE_IPADDR:
       //printf("I found an ip address... making it a network byte ordered string\n");
-      $result = rb_str_new2( (char *) $1);
+      $result = rb_str_new2( (char *) $1 );
       break;
     
     case BRO_TYPE_RECORD:
@@ -335,170 +339,3 @@ BroString to_brostring(VALUE obj);
 // Header file stuff below
 //********************
 %include "broccoli.h"
-
-//// Changes from the default header file.
-////void* bro_record_get_named_val(BroRecord *rec, const char *name, int *OUTPUT);
-////int bro_conf_get_int(const char *val_name, int *OUTPUT);
-////int bro_conf_get_dbl(const char *val_name, double *OUTPUT);
-//
-//extern int bro_debug_calltrace;
-//extern int bro_debug_messages;
-//
-//#define BRO_TYPE_UNKNOWN           0
-//#define BRO_TYPE_BOOL              1
-//#define BRO_TYPE_INT               2
-//#define BRO_TYPE_COUNT             3
-//#define BRO_TYPE_COUNTER           4
-//#define BRO_TYPE_DOUBLE            5
-//#define BRO_TYPE_TIME              6
-//#define BRO_TYPE_INTERVAL          7
-//#define BRO_TYPE_STRING            8
-//#define BRO_TYPE_PATTERN           9
-//#define BRO_TYPE_ENUM             10
-//#define BRO_TYPE_TIMER            11
-//#define BRO_TYPE_PORT             12
-//#define BRO_TYPE_IPADDR           13
-//#define BRO_TYPE_SUBNET           14
-//#define BRO_TYPE_ANY              15
-//#define BRO_TYPE_TABLE            16
-//#define BRO_TYPE_UNION            17
-//#define BRO_TYPE_RECORD           18
-//#define BRO_TYPE_LIST             19
-//#define BRO_TYPE_FUNC             20
-//#define BRO_TYPE_FILE             21
-//#define BRO_TYPE_VECTOR           22
-//#define BRO_TYPE_ERROR            23
-//#define BRO_TYPE_PACKET           24 /* CAUTION -- not defined in Bro! */
-//#define BRO_TYPE_SET              25 /* ----------- (ditto) ---------- */
-//#define BRO_TYPE_MAX              26
-//
-//#define BRO_CFLAG_NONE                      0
-//#define BRO_CFLAG_RECONNECT           (1 << 0) /* Attempt transparent reconnects */
-//#define BRO_CFLAG_ALWAYS_QUEUE        (1 << 1) /* Queue events sent while disconnected */
-//#define BRO_CFLAG_SHAREABLE           (1 << 2) /* Allow sharing handle across threads/procs */
-//#define BRO_CFLAG_DONTCACHE           (1 << 3) /* Ask peer not to use I/O cache */
-//
-//typedef unsigned int   uint32;
-//typedef unsigned short uint16;
-//typedef unsigned char  uchar;
-//
-//typedef struct bro_conn BroConn;
-//typedef struct bro_event BroEvent;
-//typedef struct bro_buf BroBuf;
-//typedef struct bro_record BroRecord;
-//
-//typedef void (*BroCompactEventFunc) (BroConn *bc, void *user_data, 
-//                                     int num_args, BroEvArg *args);
-//typedef struct bro_val_meta {
-//  int          val_type;   /* A BRO_TYPE_xxx constant */
-//} BroValMeta;
-//typedef struct bro_ev_arg {
-//  void        *arg_data;   /* Pointer to the actual event argument */
-//  BroValMeta  *arg_meta;   /* Pointer to metadata for the argument */
-//} BroEvArg;
-//
-//typedef struct bro_string {
-//  uint32       str_len;
-//  uchar       *str_val;
-//} BroString;
-//
-//typedef struct bro_port {
-//  uint16       port_num;   /* port number in host byte order */
-//  int          port_proto; /* IPPROTO_xxx */
-//} BroPort;
-//
-//typedef struct bro_subnet
-//{
-//  uint32       sn_net;     /* IP address in network byte order */
-//  uint32       sn_width;   /* Length of prefix to consider. */
-//} BroSubnet;
-//
-//BroConn* bro_conn_new_str(const char *hostname,
-//                          int flags);
-//
-//int bro_conn_connect (BroConn *bc);
-//int bro_conn_process_input (BroConn *bc);
-//int bro_conn_delete (BroConn *bc);
-//int bro_conn_alive (const BroConn *bc);
-//void* bro_conn_data_get (BroConn *bc, const char *key);
-//void* bro_conn_data_del (BroConn *bc, const char *key);
-//int bro_conn_get_fd (BroConn *bc);
-//void bro_conn_adopt_events (BroConn *src, BroConn *dst);
-//
-//int bro_conf_get_int (const char *val_name, int *OUTPUT);
-//int bro_conf_get_dbl (const char *val_name, double *OUTPUT);
-//const char* bro_conf_get_str (const char *val_name);
-////
-////void        bro_string_init                 (BroString *bs);
-////int         bro_string_set                  (BroString *bs,
-////                                             const char *s);
-////int         bro_string_set_data             (BroString *bs,
-////                                             const uchar *data,
-////                                             int data_len);
-////const uchar* bro_string_get_data            (const BroString *bs);
-////uint32      bro_string_get_length           (const BroString *bs);
-////BroString*  bro_string_copy                 (BroString *bs);
-////void        bro_string_cleanup              (BroString *bs);
-////void        bro_string_free                 (BroString *bs);
-//
-//BroRecord* bro_record_new (void);
-//int bro_record_add_val (BroRecord *rec, 
-//                        const char *name,
-//  				              int type, 
-//  				              const char *type_name,
-//  				              const void *val);
-//void* bro_record_get_named_val (BroRecord *rec,
-//                                const char *name,
-//                                int *OUTPUT);
-//void* bro_record_get_nth_val (BroRecord *rec,
-//                              int num,
-//                              int *type);
-//int bro_record_set_nth_val (BroRecord *rec,
-//                            int num,
-//                            int type,
-//                            const char *type_name,
-//                            const void *val);
-//int bro_record_set_named_val (BroRecord *rec,
-//                              const char *name,
-//                              int type,
-//                              const char *type_name,
-//                              const void *val);
-//void bro_record_free (BroRecord *rec);
-//                             
-//BroEvent *bro_event_new (const char *event_name);
-//                             
-//int bro_event_add_val (BroEvent *be,
-//                       int type,
-//                       const char *type_name,
-//                       const void *val);
-//int bro_event_set_val (BroEvent *be, 
-//                       int val_num,
-//                       int type, 
-//                       const char *type_name,
-//                       const void *val);
-//                             
-//void bro_event_registry_add (BroConn *bc,
-//                             const char *event_name,
-//                             BroEventFunc func,
-//                             void *user_data);
-//void bro_event_registry_add_compact (BroConn *bc,
-//                                     const char *event_name,
-//                                     BroCompactEventFunc func,
-//                                     void *user_data);
-//void bro_event_registry_remove (BroConn *bc, 
-//                                const char *event_name);
-//void bro_event_registry_request (BroConn *bc);
-//
-//int bro_event_queue_length_max (BroConn *bc);
-//int bro_event_queue_length (BroConn *bc);
-//int bro_event_queue_flush (BroConn *bc);
-//                             
-//int bro_event_send (BroConn *bc,
-//                    BroEvent *be);
-//                   
-//void bro_event_free (BroEvent *be);
-//                             
-//double bro_util_current_time (void);
-//
-//
-//                            
