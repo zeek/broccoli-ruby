@@ -65,8 +65,8 @@ append_cache_entry () {
 # set defaults
 builddir=build
 CMakeCacheEntries=""
-append_cache_entry RB_SITE_INSTALL_DIR      PATH     $site_packages
-append_cache_entry RB_SITE_ARCH_INSTALL_DIR PATH     $site_arch_packages
+append_cache_entry RB_INSTALL_DIR           PATH     $site_packages
+append_cache_entry RB_ARCH_INSTALL_DIR      PATH     $site_arch_packages
 append_cache_entry ENABLE_DEBUG             BOOL     false
 append_cache_entry RUBY_EXECUTABLE          PATH     `which ruby`
 

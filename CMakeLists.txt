@@ -65,9 +65,7 @@ include(FindRequiredPackage)
 FindRequiredPackage(Broccoli)
 FindRequiredPackage(SWIG)
 
-set(Ruby_FIND_VERSION_MAJOR 1)
-set(Ruby_FIND_VERSION_MINOR 8)
-FindRequiredPackage(Ruby)
+FIND_PACKAGE(Ruby 1.8)
 
 if (MISSING_PREREQS)
     foreach (prereq ${MISSING_PREREQ_DESCS})
@@ -107,18 +105,18 @@ swig_link_libraries(broccoli_ext ${Broccoli_LIBRARY} ${RUBY_LIBRARY})
 ########################################################################
 ## Install Files
 
-if (NOT RB_SITE_INSTALL_DIR)
-    # the configure wrapper was not used, default to "home" style installation
-    set(RB_SITE_INSTALL_DIR lib/ruby)
+if (NOT RB_INSTALL_DIR)
+    # the configure wrapper was not used, default to the discovered site directories
+    set(RB_INSTALL_DIR ${RUBY_SITELIB_DIR})
+    set(RB_ARCH_INSTALL_DIR ${RUBY_SITEARCH_DIR})
 endif ()
 
-install(FILES lib/broccoli.rb DESTINATION ${RB_SITE_INSTALL_DIR})
-install(FILES lib/Broccoli/connection.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
-install(FILES lib/Broccoli/event.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
-install(FILES lib/Broccoli/record.rb DESTINATION ${RB_SITE_INSTALL_DIR}/Broccoli)
+install(FILES lib/broccoli.rb DESTINATION ${RB_INSTALL_DIR})
+install(FILES lib/Broccoli/connection.rb DESTINATION ${RB_INSTALL_DIR}/Broccoli)
+install(FILES lib/Broccoli/event.rb DESTINATION ${RB_INSTALL_DIR}/Broccoli)
+install(FILES lib/Broccoli/record.rb DESTINATION ${RB_INSTALL_DIR}/Broccoli)
 
-install(TARGETS ${SWIG_MODULE_broccoli_ext_REAL_NAME}
-        DESTINATION ${RB_SITE_ARCH_INSTALL_DIR})
+install(TARGETS broccoli_ext DESTINATION ${RB_ARCH_INSTALL_DIR})
 
 ########################################################################
 ## Build Summary
@@ -130,7 +128,8 @@ endif ()
 message(
     "\n==============|  Broccoli-Ruby Build Summary  |================="
     "\n"
-    "\nInstall dir:       ${RB_SITE_INSTALL_DIR}"
+    "\nLib install dir:   ${RB_INSTALL_DIR}"
+    "\nExt install dir:   ${RB_ARCH_INSTALL_DIR}"
     "\nDebug mode:        ${ENABLE_DEBUG}"
     "\n"
     "\nCC:                ${CMAKE_C_COMPILER}"
