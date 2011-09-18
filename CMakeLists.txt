@@ -65,12 +65,28 @@ include(FindRequiredPackage)
 FindRequiredPackage(Broccoli)
 FindRequiredPackage(SWIG)
 
-FIND_PACKAGE(Ruby 1.8)
+find_package(Ruby 1.8)
 
-if (MISSING_PREREQS)
+if (MISSING_PREREQS OR NOT RUBY_FOUND)
+    if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+        set(msg_type SEND_ERROR)
+    else ()
+        set(msg_type STATUS)
+    endif ()
+
     foreach (prereq ${MISSING_PREREQ_DESCS})
-        message(SEND_ERROR ${prereq})
+        message(${msg_type} ${prereq})
     endforeach ()
+
+    if (NOT RUBY_FOUND)
+        message(${msg_type} "No ruby installation found")
+    endif ()
+
+    if (NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+        message(STATUS "Warning: Ruby bindings will not be built")
+        return()
+    endif ()
+
     message(FATAL_ERROR "Configuration aborted due to missing prerequisites")
 endif ()
 
