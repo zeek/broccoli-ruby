@@ -1,6 +1,6 @@
-@load frameworks/communication/listen-clear
+@load frameworks/communication/listen
 
-redef Communication::listen_port_clear = 47758/tcp;
+redef Communication::listen_port = 47758/tcp;
 redef Communication::nodes += {
 	["broping"] = [$host = 127.0.0.1, $events = /ping/, $connect=F, $ssl=F]
 };
