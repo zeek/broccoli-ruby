@@ -1,4 +1,28 @@
-1.4.0 | 2011-02-25 21:26:49 -0500
+
+1.5 | 2011-10-18 10:00:57 -0700
+
+  * Distribution cleanup. (Robin Sommer)
+
+  * Updates to work with communication API changes. (Seth Hall)
+
+  * Reorganized the module names.  From ruby, a user now loads the
+    "broccoli" module.  This automatically pulls in the swig wrapper
+    named "broccoli_ext".  (Seth Hall)
+
+  * Building with cmake completely works now. (Seth Hall)
+
+  * Updates for the change to 64-bit ints. (Seth Hall)
+
+  * Fixes for the example script. (Seth Hall)
+
+  * New example script that points out a bug in broccoli. (Seth Hall)
+
+  * Remove the 'net' type from Broccoli ruby bindings. Addresses #535.
+    (Jon Siwek)
+
+  * Install binaries with an RPATH (Jon Siwek)
+
+1.4 | 2011-02-25 21:26:49 -0500
 
   * Cleaning up and adding a configure script. (Seth Hall)
 
