@@ -12,7 +12,12 @@ FindRequiredPackage(SWIG)
 
 find_package(Ruby 1.8)
 
-if (MISSING_PREREQS OR NOT RUBY_FOUND)
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/example.i "%module example %{%}")
+execute_process(COMMAND ${SWIG_EXECUTABLE} -ruby
+    ${CMAKE_CURRENT_BINARY_DIR}/example.i
+    ERROR_VARIABLE SWIG_RUBY_ERR)
+
+if (MISSING_PREREQS OR NOT RUBY_FOUND OR SWIG_RUBY_ERR)
     if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
         set(msg_type SEND_ERROR)
     else ()
@@ -25,6 +30,10 @@ if (MISSING_PREREQS OR NOT RUBY_FOUND)
 
     if (NOT RUBY_FOUND)
         message(${msg_type} "No ruby installation found")
+    endif ()
+
+    if (SWIG_RUBY_ERR)
+        message(${msg_type} "Swig installation doesn't support Ruby wrapper generation: ${SWIG_RUBY_ERR}")
     endif ()
 
     if (NOT "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
