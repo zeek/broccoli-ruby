@@ -1,5 +1,10 @@
 
-1.5 | 2011-10-18 10:00:57 -0700
+1.5 | 2011-10-21 15:15:55 -0500
+
+  * Make dist now cleans the copied source. (Jon Siwek)
+
+  * Add configure-time check that swig can generate Ruby wrappers.
+    Addresses #642. (Jon Siwek)
 
   * Distribution cleanup. (Robin Sommer)
 
