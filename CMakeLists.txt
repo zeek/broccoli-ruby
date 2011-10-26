@@ -71,6 +71,8 @@ set_target_properties(broccoli_ext PROPERTIES
     OUTPUT_NAME "broccoli_ext" 
     PREFIX "")
 swig_link_libraries(broccoli_ext ${Broccoli_LIBRARY} ${RUBY_LIBRARY})
+set_source_files_properties(${swig_generated_file_fullname} PROPERTIES
+                            COMPILE_FLAGS -fno-strict-aliasing)
 
 ########################################################################
 ## Install Files
