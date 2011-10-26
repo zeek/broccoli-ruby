@@ -1,4 +1,9 @@
 
+1.5-1 | 2011-10-26 10:12:01 -0500
+
+  * Compile SWIG bindings with no-strict-aliasing (addresses #644).
+    (Jon Siwek)
+
 1.5 | 2011-10-25 17:41:31 -0700
 
   * Make dist now cleans the copied source. (Jon Siwek)
