@@ -86,10 +86,12 @@ while [ $# -ne 0 ]; do
             builddir=$optarg
             ;;
         --prefix=*)
-            append_cache_entry RB_MOD_INSTALL_DIR   PATH    $optarg/lib/ruby/site_ruby/${rbver}
+            append_cache_entry RB_INSTALL_DIR   PATH    $optarg/lib/ruby/site_ruby/${rbver}
+            append_cache_entry RB_ARCH_INSTALL_DIR   PATH    $optarg/lib/ruby/site_ruby/${rbver}
             ;;
         --home=*)
-            append_cache_entry RB_MOD_INSTALL_DIR   PATH    $optarg/lib/ruby
+            append_cache_entry RB_INSTALL_DIR   PATH    $optarg/lib/ruby
+            append_cache_entry RB_ARCH_INSTALL_DIR   PATH    $optarg/lib/ruby
             ;;
         --enable-debug)
             append_cache_entry ENABLE_DEBUG         BOOL    true
