@@ -1,4 +1,5 @@
 %module "broccoli_ext"
+#pragma SWIG nowarn=801,451
 
 %include cpointer.i
 %include typemaps.i
