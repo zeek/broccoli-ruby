@@ -1,5 +1,6 @@
-VERSION_FULL=`basename \`pwd\``-`cat VERSION`
-VERSION_MIN=`basename \`pwd\``-`cat VERSION`-minimal
+REPO=`basename \`git config --get remote.origin.url\``
+VERSION_FULL=$(REPO)-`cat VERSION`
+VERSION_MIN=$(REPO)-`cat VERSION`-minimal
 HAVE_MODULES=git submodule | grep -v cmake >/dev/null
 
 all:
