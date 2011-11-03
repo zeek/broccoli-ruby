@@ -78,9 +78,9 @@ set_source_files_properties(${swig_generated_file_fullname} PROPERTIES
 ## Install Files
 
 if (NOT RB_INSTALL_DIR)
-    # the configure wrapper was not used, default to the discovered site directories
-    set(RB_INSTALL_DIR ${RUBY_SITELIB_DIR})
-    set(RB_ARCH_INSTALL_DIR ${RUBY_SITEARCH_DIR})
+    # the configure wrapper was not used, default to "home" style installation
+    set(RB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/ruby)
+    set(RB_ARCH_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/ruby)
 endif ()
 
 install(FILES lib/broccoli.rb DESTINATION ${RB_INSTALL_DIR})
