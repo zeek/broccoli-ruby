@@ -1,4 +1,16 @@
 
+1.51-10 | 2011-11-07 05:44:17 -0800
+
+  * Ignoring some SWIG warnings. Addresses #388. (Jon Siwek)
+
+  * Changes to broccoli-ruby installation scheme. Fixes #652.
+
+    - `--home` and `--prefix` configure options are now respected when
+      installing as the main CMake project.  If not given, the Ruby
+
+    - When being installed as a CMake sub-project, then the
+      "home"-style installation is performed. (Jon Siwek)
+
 1.51 | 2011-10-26 13:51:22 -0700
 
   * Compile SWIG bindings with no-strict-aliasing (addresses #644).
