@@ -7,11 +7,10 @@
 Ruby Bindings for Broccoli
 ===============================================
 
-.. class:: opening
+.. rst-class:: opening
 
     This is the broccoli-ruby extension for Ruby which provides access
-    to the Broccoli API.  `Broccoli
-    <{{git('broccoli:doc/broccoli-manual.rst')}}>`_ is a library for
+    to the Broccoli API.  Broccoli is a library for
     communicating with the Bro Intrusion Detection System.
 
 
@@ -25,8 +24,8 @@ Broccoli-Ruby's git repository is located at `git://git.bro-ids.org/broccoli-rub
 <git://git.bro-ids.org/broccoli-ruby.git>`__. You can browse the repository
 `here <http://git.bro-ids.org/broccoli-ruby.git>`__.
 
-This document describes Broccoli-Ruby |version|. See the `CHANGES
-<{{git('broccoli-ruby:CHANGES')}}>`__ file for version history.
+This document describes Broccoli-Ruby |version|. See the ``CHANGES``
+file for version history.
 
 
 Installation
