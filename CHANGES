@@ -1,4 +1,8 @@
 
+1.52 | 2012-01-09 16:11:01 -0800
+
+  * Submodule README conformity changes (Jon Siwek)
+
 1.51-10 | 2011-11-07 05:44:17 -0800
 
   * Ignoring some SWIG warnings. Addresses #388. (Jon Siwek)
