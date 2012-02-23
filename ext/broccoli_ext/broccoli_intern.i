@@ -78,10 +78,13 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
         out[i] = UINT2NUM( *((uint32 *) meta->ev_args[i].arg_data) );
         break;
       case BRO_TYPE_IPADDR:
+        {
         //printf("Found an ip address... making it a string\n");
         //output ip addresses as strings that can be unpacked from ruby.
-        out[i] = rb_str_new2((char *) meta->ev_args[i].arg_data);
+        BroAddr* a = (BroAddr*) meta->ev_args[i].arg_data;
+        out[i] = rb_str_new((char *) a->addr, a->size * sizeof(uint32));
         break;
+        }
       case BRO_TYPE_COUNTER:
       case BRO_TYPE_TIMER:
       case BRO_TYPE_PATTERN:
@@ -185,9 +188,12 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
     case BRO_TYPE_COUNT:
     case BRO_TYPE_ENUM:
     case BRO_TYPE_IPADDR:
-      //printf("Storing value as a uint64\n");
-      tmp_uint64 = NUM2ULL(value);
-      $3 = &tmp_uint64;
+      //printf("Storing value as a BroAddr\n");
+      res = SWIG_ConvertPtr(value, &tmp_swigpointer, SWIGTYPE_p_bro_addr, 0);
+      if (!SWIG_IsOK(res)) {
+        SWIG_exception_fail(SWIG_ArgError(res), "the value for $symname was supposed to be a BroAddr"); 
+      }
+      $3 = (BroAddr *)(tmp_swigpointer);
       break;
       
     case BRO_TYPE_STRING:
@@ -295,7 +301,8 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
       
     case BRO_TYPE_IPADDR:
       //printf("I found an ip address... making it a network byte ordered string\n");
-      $result = rb_str_new2( (char *) $1 );
+      $result = rb_str_new( (char *)((BroAddr *) $1)->addr,
+                            ((BroAddr *) $1)->size * sizeof(uint32) );
       break;
     
     case BRO_TYPE_RECORD:
