@@ -187,6 +187,11 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
       
     case BRO_TYPE_COUNT:
     case BRO_TYPE_ENUM:
+      //printf("Storing value as a uint64\n");
+      tmp_uint64 = NUM2ULL(value);
+      $3 = &tmp_uint64;
+      break;
+
     case BRO_TYPE_IPADDR:
       //printf("Storing value as a BroAddr\n");
       res = SWIG_ConvertPtr(value, &tmp_swigpointer, SWIGTYPE_p_bro_addr, 0);
