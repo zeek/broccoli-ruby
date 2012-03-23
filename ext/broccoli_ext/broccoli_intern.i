@@ -82,7 +82,10 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
         //printf("Found an ip address... making it a string\n");
         //output ip addresses as strings that can be unpacked from ruby.
         BroAddr* a = (BroAddr*) meta->ev_args[i].arg_data;
-        out[i] = rb_str_new((char *) a->addr, a->size * sizeof(uint32));
+        if ( bro_util_is_v4_addr(a) )
+            out[i] = rb_str_new((char *) (&a->addr[3]), sizeof(uint32));
+        else
+            out[i] = rb_str_new((char *) a->addr, 4 * sizeof(uint32));
         break;
         }
       case BRO_TYPE_COUNTER:
@@ -306,8 +309,12 @@ wrap_BroCompactEventFunc(BroConn *bc, void *user_data, BroEvMeta *meta)
 
     case BRO_TYPE_IPADDR:
       //printf("I found an ip address... making it a network byte ordered string\n");
-      $result = rb_str_new( (char *)((BroAddr *) $1)->addr,
-                            ((BroAddr *) $1)->size * sizeof(uint32) );
+      if ( bro_util_is_v4_addr((BroAddr*) $1) )
+          $result = rb_str_new((char *) (&((BroAddr *) $1)->addr[3]),
+                               sizeof(uint32) );
+      else
+          $result = rb_str_new((char *) ((BroAddr *) $1)->addr,
+                               4 * sizeof(uint32) );
       break;
 
     case BRO_TYPE_RECORD:
