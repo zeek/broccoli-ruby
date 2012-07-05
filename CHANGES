@@ -1,4 +1,15 @@
 
+1.53 | 2012-06-11 17:25:05 -0700
+
+  * Update bindings to work with Broccoli's IPv4-mapped BroAddrs. (Jon Siwek)
+
+  * Fix count/enum being treated same as addr. (Jon Siwek)
+    
+  * Update broccoli-ruby for IPv6 addr/subnet support. Addresses #448.
+    (Jon Siwek)
+
+  * Raise minimum required CMake version to 2.6.3 (Jon Siwek)
+    
 1.52 | 2012-01-09 16:11:01 -0800
 
   * Submodule README conformity changes (Jon Siwek)
