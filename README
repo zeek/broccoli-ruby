@@ -18,11 +18,11 @@ Download
 ========
 
 You can find the latest Broccoli-Ruby release for download at
-http://www.bro-ids.org/download.
+http://www.bro.org/download.
 
-Broccoli-Ruby's git repository is located at `git://git.bro-ids.org/broccoli-ruby.git
-<git://git.bro-ids.org/broccoli-ruby.git>`__. You can browse the repository
-`here <http://git.bro-ids.org/broccoli-ruby.git>`__.
+Broccoli-Ruby's git repository is located at `git://git.bro.org/broccoli-ruby.git
+<git://git.bro.org/broccoli-ruby.git>`__. You can browse the repository
+`here <http://git.bro.org/broccoli-ruby.git>`__.
 
 This document describes Broccoli-Ruby |version|. See the ``CHANGES``
 file for version history.
@@ -64,4 +64,4 @@ Contact
 =======
 
 If you have a question/comment/patch, see the Bro `contact page
-<http://www.bro-ids.org/contact/index.html>`_.
+<http://www.bro.org/contact/index.html>`_.
