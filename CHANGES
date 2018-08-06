@@ -1,4 +1,8 @@
 
+1.61-11 | 2018-08-06 16:01:46 -0500
+
+  * Fix deprecation warning for swig_add_module (Jon Siwek, Corelight)
+
 1.61-5 | 2018-05-15 15:39:06 +0000
 
   * Updating submodule.

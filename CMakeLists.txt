@@ -59,7 +59,15 @@ include_directories(BEFORE ${Broccoli_INCLUDE_DIR})
 include(UseSWIG)
 
 set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/ext/broccoli_ext)
-swig_add_module(broccoli_ext ruby ext/broccoli_ext/broccoli_intern.i)
+
+if ( CMAKE_VERSION VERSION_LESS 3.8.0 )
+    swig_add_module(broccoli_ext ruby ext/broccoli_ext/broccoli_intern.i)
+else ()
+    swig_add_library(broccoli_ext
+                     LANGUAGE ruby
+                     SOURCES ext/broccoli_ext/broccoli_intern.i)
+endif ()
+
 if (APPLE)
     # Mac OS X needs ruby extensions to end with ".bundle"
     # and it needs the -flat_namespace argument for SWIG.
