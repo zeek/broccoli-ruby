@@ -1,4 +1,8 @@
 
+1.62 | 2018-08-31 15:25:31 -0500
+
+  * Improve `make dist` (Jon Siwek, Corelight)
+
 1.61-11 | 2018-08-06 16:01:46 -0500
 
   * Fix deprecation warning for swig_add_module (Jon Siwek, Corelight)
