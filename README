@@ -1,7 +1,7 @@
 ..	-*- mode: rst-mode -*-
 ..
 .. Version number is filled in automatically.
-.. |version| replace:: 1.62
+.. |version| replace:: 1.62-2
 
 ===============================================
 Ruby Bindings for Broccoli
@@ -18,11 +18,10 @@ Download
 ========
 
 You can find the latest Broccoli-Ruby release for download at
-http://www.bro.org/download.
+https://www.zeek.org/download.
 
-Broccoli-Ruby's git repository is located at `git://git.bro.org/broccoli-ruby.git
-<git://git.bro.org/broccoli-ruby.git>`__. You can browse the repository
-`here <http://git.bro.org/broccoli-ruby.git>`__.
+Broccoli-Ruby's git repository is located at
+https://github.com/zeek/broccoli-ruby
 
 This document describes Broccoli-Ruby |version|. See the ``CHANGES``
 file for version history.
